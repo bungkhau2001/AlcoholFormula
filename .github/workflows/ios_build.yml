@@ -10,16 +10,17 @@ on:
 jobs:
   build:
     name: Build for iOS Simulator
-    runs-on: macos-15
+    runs-on: macos-14        # macos-14 (Apple Silicon) co san hon macos-15
+    timeout-minutes: 30      # Tu dong huy neu qua 30 phut
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Xcode (latest stable)
+      - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: latest-stable
+          xcode-version: '16.0'   # Version cu hon, de tim runner hon
 
       - name: Xcode version
         run: xcodebuild -version
@@ -32,7 +33,7 @@ jobs:
           xcodebuild \
             -project AlcoholFormula.xcodeproj \
             -scheme AlcoholFormula \
-            -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest' \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             ENABLE_BITCODE=NO \
