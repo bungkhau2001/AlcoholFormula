@@ -17,26 +17,28 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # Hien thi Xcode san co (khong can setup them)
-      - name: Show Xcode info
+      - name: Show environment
         run: |
-          ls /Applications/ | grep Xcode || true
-          xcodebuild -version
-          xcrun simctl list devices available | grep -E "iPhone 1[2-9]|iPhone 2" | head -10
+          xcodebuild -version || true
+          ls /Applications/ | grep -i xcode || true
+          sw_vers
 
       - name: List schemes
-        run: xcodebuild -project AlcoholFormula.xcodeproj -list
+        run: |
+          xcodebuild \
+            -project AlcoholFormula.xcodeproj \
+            -list 2>&1 || true
 
       - name: Build for iOS Simulator
         run: |
           xcodebuild \
             -project AlcoholFormula.xcodeproj \
             -scheme AlcoholFormula \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
+            -destination 'generic/platform=iOS Simulator' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             ENABLE_BITCODE=NO \
-            clean build
+            clean build 2>&1
 
       - name: Upload App Artifact
         uses: actions/upload-artifact@v4
