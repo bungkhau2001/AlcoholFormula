@@ -1,4 +1,4 @@
-﻿import SwiftUI
+import SwiftUI
 
 struct BillCalculatorView: View {
     @EnvironmentObject var sound: SoundManager
@@ -36,8 +36,8 @@ struct BillCalculatorView: View {
                             .font(.system(size: 13, weight: .bold, design: .rounded))
                             .foregroundColor(.white.opacity(0.6))
                         HStack(spacing: 8) {
-                            TextField("0", text: )
-                                .keyboardType(.numberPad).focused()
+                            TextField("0", text: $totalText)
+                                .keyboardType(.numberPad).focused($focused)
                                 .font(.system(size: 24, weight: .bold, design: .rounded))
                                 .foregroundColor(.white)
                             Text("d").font(.system(size: 22, weight: .bold)).foregroundColor(.amber)
