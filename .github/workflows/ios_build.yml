@@ -19,22 +19,22 @@ jobs:
 
       - name: Show environment
         run: |
-          xcodebuild -version || true
-          ls /Applications/ | grep -i xcode || true
+          xcodebuild -version
           sw_vers
 
-      - name: List schemes
+      - name: Show available destinations
         run: |
           xcodebuild \
             -project AlcoholFormula.xcodeproj \
-            -list 2>&1 || true
+            -scheme AlcoholFormula \
+            -showdestinations 2>&1 | head -40 || true
 
       - name: Build for iOS Simulator
         run: |
           xcodebuild \
             -project AlcoholFormula.xcodeproj \
             -scheme AlcoholFormula \
-            -destination 'generic/platform=iOS Simulator' \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=latest' \
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             ENABLE_BITCODE=NO \
