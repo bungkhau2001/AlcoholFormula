@@ -22,14 +22,7 @@ jobs:
           xcodebuild -version
           sw_vers
 
-      - name: Show available destinations
-        run: |
-          xcodebuild \
-            -project AlcoholFormula.xcodeproj \
-            -scheme AlcoholFormula \
-            -showdestinations 2>&1 | head -40 || true
-
-      - name: Build for iOS Simulator
+      - name: Build for iOS Simulator (test)
         run: |
           xcodebuild \
             -project AlcoholFormula.xcodeproj \
@@ -38,12 +31,32 @@ jobs:
             -configuration Debug \
             CODE_SIGNING_ALLOWED=NO \
             ENABLE_BITCODE=NO \
-            clean build 2>&1
+            clean build 2>&1 | tail -20
 
-      - name: Upload App Artifact
+      - name: Build unsigned IPA for real device
+        run: |
+          xcodebuild \
+            -project AlcoholFormula.xcodeproj \
+            -scheme AlcoholFormula \
+            -destination 'generic/platform=iOS' \
+            -configuration Release \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            ENABLE_BITCODE=NO \
+            clean build \
+            -derivedDataPath build/DerivedData 2>&1 | tail -30
+
+      - name: Package IPA
+        run: |
+          mkdir -p build/Payload
+          cp -r "build/DerivedData/Build/Products/Release-iphoneos/AlcoholFormula.app" build/Payload/
+          cd build && zip -r AlcoholFormula.ipa Payload/
+          echo "IPA size: "
+
+      - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
-        if: success()
         with:
-          name: AlcoholFormula-Simulator
-          path: ~/Library/Developer/Xcode/DerivedData/**/Build/Products/Debug-iphonesimulator/AlcoholFormula.app
-          retention-days: 7
+          name: AlcoholFormula-IPA
+          path: build/AlcoholFormula.ipa
+          retention-days: 14
